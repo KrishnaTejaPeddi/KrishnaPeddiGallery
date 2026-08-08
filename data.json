@@ -192,9 +192,16 @@
       },
       {
         "id": "p1786192775569afwo1",
-        "imageUrl": "",
+        "imageUrl": "https://raw.githubusercontent.com/KrishnaTejaPeddi/KrishnaPeddiGallery/main/images/img-1786192775577-ipbuc.webp",
         "title": "asteroid",
         "caption": "july 16th 2026",
+        "date": "2026-08-08"
+      },
+      {
+        "id": "p1786192815797ew9sd",
+        "imageUrl": "",
+        "title": "Fun test",
+        "caption": "just wanted to make something new. august 2nd, 2026.",
         "date": "2026-08-08"
       }
     ],
