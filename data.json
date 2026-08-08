@@ -17,9 +17,16 @@
     "home": [
       {
         "id": "p1786191040684t4s1h",
-        "imageUrl": "",
+        "imageUrl": "https://raw.githubusercontent.com/KrishnaTejaPeddi/KrishnaPeddiGallery/main/images/img-1786191040690-u5tgx.webp",
         "title": "basic pattern",
         "caption": "Made sometime in 2025. I do not have the exact date right now.",
+        "date": "2026-08-08"
+      },
+      {
+        "id": "p1786191115272br97r",
+        "imageUrl": "",
+        "title": "",
+        "caption": "I liked doing contour art, Made this, made sometime in 2025.",
         "date": "2026-08-08"
       }
     ],
