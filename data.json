@@ -3,5 +3,26 @@
     "title": "Gallery",
     "subtitle": "A running collection of images, and the small stories behind each one."
   },
-  "posts": []
+  "pages": [
+    {
+      "id": "home",
+      "label": "Home"
+    },
+    {
+      "id": "photography",
+      "label": "Photography"
+    }
+  ],
+  "postsByPage": {
+    "home": [
+      {
+        "id": "p1786190726127mykrg",
+        "imageUrl": "",
+        "title": "Angler fish",
+        "caption": "It's an Anglerfish",
+        "date": "2026-08-08"
+      }
+    ],
+    "photography": []
+  }
 }
