@@ -27,7 +27,7 @@ body{
   margin:0;
   background:var(--bg);
   color:var(--porcelain);
-  font-family:'IBM Plex Sans', sans-serif;
+  font-family:"IBM Plex Sans", sans-serif;
   min-height:100vh;
 }
 
@@ -38,7 +38,7 @@ body{
 }
 
 .eyebrow{
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:12px;
   letter-spacing:.14em;
   text-transform:uppercase;
@@ -47,7 +47,7 @@ body{
 }
 
 h1.title{
-  font-family:'Fraunces', serif;
+  font-family:"Fraunces", serif;
   font-style:italic;
   font-weight:500;
   font-size:clamp(34px,5vw,54px);
@@ -70,18 +70,79 @@ h1.title{
   border-radius:2px;
 }
 
+.masthead{
+  margin-bottom:32px;
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex-wrap:wrap;
+  border-bottom:1px solid var(--line);
+  padding-bottom:0;
+  margin-bottom:48px;
+}
+.nav-tab{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:12px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--porcelain-dim);
+  background:none;
+  border:none;
+  padding:12px 16px;
+  cursor:pointer;
+  position:relative;
+  top:1px;
+  border-bottom:2px solid transparent;
+  text-decoration:none;
+  display:inline-block;
+}
+.nav-tab:hover{color:var(--porcelain);}
+.nav-tab.active{color:var(--brass);border-bottom-color:var(--brass);}
+.nav-add{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:12px;
+  color:var(--brass-dim);
+  background:none;
+  border:none;
+  padding:12px 10px;
+  cursor:pointer;
+}
+.nav-add:hover{color:var(--brass);}
+.nav-tab-wrap{
+  display:flex;
+  align-items:center;
+  position:relative;
+}
+.nav-tab-controls{
+  display:flex;
+  gap:2px;
+  margin-left:2px;
+}
+.nav-mini{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10px;
+  color:var(--porcelain-dim);
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:4px;
+}
+.nav-mini:hover{color:var(--brass);}
+.nav-mini.danger:hover{color:var(--rust);}
+
 .top-row{
   display:flex;
-  justify-content:space-between;
+  justify-content:flex-end;
   align-items:flex-start;
   gap:24px;
-  margin-bottom:56px;
-  border-bottom:1px solid var(--line);
-  padding-bottom:40px;
+  margin-bottom:40px;
 }
 
 .add-btn{
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:12px;
   letter-spacing:.08em;
   text-transform:uppercase;
@@ -132,7 +193,7 @@ h1.title{
   align-items:center;
   justify-content:center;
   color:var(--porcelain-dim);
-  font-family:'IBM Plex Mono',monospace;
+  font-family:"IBM Plex Mono",monospace;
   font-size:12px;
   text-align:center;
   padding:20px;
@@ -149,7 +210,7 @@ h1.title{
 }
 
 .plate-num{
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:11px;
   letter-spacing:.12em;
   color:var(--brass-dim);
@@ -157,7 +218,7 @@ h1.title{
 }
 
 .caption h2{
-  font-family:'Fraunces', serif;
+  font-family:"Fraunces", serif;
   font-style:italic;
   font-weight:500;
   font-size:24px;
@@ -174,7 +235,7 @@ h1.title{
 }
 
 .plate-date{
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:11px;
   color:#6B6658;
   margin-top:18px;
@@ -188,7 +249,7 @@ h1.title{
   margin-top:14px;
 }
 .icon-btn{
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:11px;
   background:transparent;
   border:1px solid #C9C2AE;
@@ -220,7 +281,7 @@ h1.title{
   align-items:center;
 }
 .owner-btn{
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:12px;
   letter-spacing:.06em;
   background:var(--bg-raised);
@@ -252,7 +313,7 @@ h1.title{
   margin:auto;
 }
 .modal h3{
-  font-family:'Fraunces', serif;
+  font-family:"Fraunces", serif;
   font-style:italic;
   font-weight:500;
   font-size:20px;
@@ -268,7 +329,7 @@ h1.title{
   background:#E2DCCB;
   padding:1px 5px;
   border-radius:2px;
-  font-family:'IBM Plex Mono',monospace;
+  font-family:"IBM Plex Mono",monospace;
   font-size:12px;
 }
 .modal ol.setup-steps{
@@ -281,7 +342,7 @@ h1.title{
 .field{margin-bottom:16px;}
 .field label{
   display:block;
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:11px;
   letter-spacing:.06em;
   text-transform:uppercase;
@@ -290,7 +351,7 @@ h1.title{
 }
 .field input, .field textarea{
   width:100%;
-  font-family:'IBM Plex Sans', sans-serif;
+  font-family:"IBM Plex Sans", sans-serif;
   font-size:14px;
   padding:10px 12px;
   border:1px solid #C9C2AE;
@@ -308,7 +369,7 @@ h1.title{
   flex-wrap:wrap;
 }
 .btn{
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:12px;
   letter-spacing:.05em;
   padding:10px 18px;
@@ -335,7 +396,7 @@ h1.title{
   padding:80px 0;
   text-align:center;
   color:var(--porcelain-dim);
-  font-family:'IBM Plex Mono', monospace;
+  font-family:"IBM Plex Mono", monospace;
   font-size:12px;
   letter-spacing:.08em;
   text-transform:uppercase;
@@ -345,7 +406,6 @@ h1.title{
   .plate, .plate.rev{grid-template-columns:1fr;}
   .plate.rev .figure{order:1;}
   .plate.rev .caption{order:2;}
-  .top-row{flex-direction:column;}
 }
 </style>
 </head>
@@ -359,168 +419,193 @@ h1.title{
 <div id="modalRoot"></div>
 
 <script>
-/* ── Edit these two lines to match your GitHub repo before uploading ── */
-const GH_OWNER  = 'KrishnaTejaPeddi';
-const GH_REPO   = 'KrishnaPeddiGallery';
-/* ── ────────────────────────────────────────────────────────────── */
-const GH_BRANCH = 'main';
-const DATA_PATH = 'data.json';
-const TOKEN_KEY = 'gallery-gh-token';
+/* Edit these two lines to match your GitHub repo before uploading */
+const GH_OWNER  = "KrishnaTejaPeddi";
+const GH_REPO   = "KrishnaPeddiGallery";
+const GH_BRANCH = "main";
+const DATA_PATH = "data.json";
+const TOKEN_KEY = "gallery-gh-token";
 
-let meta = { title: 'Field Notes', subtitle: 'A running collection of images, and the small stories behind each one.' };
-let posts = [];
+let meta = { title: "Field Notes", subtitle: "A running collection of images, and the small stories behind each one." };
+let pages = [
+  { id: "home", label: "Home" },
+  { id: "photography", label: "Photography" }
+];
+let postsByPage = { home: [], photography: [] };
 let isOwner = false;
 let currentSha = null;
 
 function esc(s){
-  const d = document.createElement('div');
-  d.textContent = s == null ? '' : s;
+  const d = document.createElement("div");
+  d.textContent = s == null ? "" : s;
   return d.innerHTML;
 }
-function pad3(n){ return String(n).padStart(3,'0'); }
+function pad3(n){ return String(n).padStart(3, "0"); }
 function fmtDate(iso){
-  if(!iso) return '';
-  const d = new Date(iso + 'T00:00:00');
+  if(!iso) return "";
+  const d = new Date(iso + "T00:00:00");
   if(isNaN(d)) return iso;
-  return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 }
-function b64EncodeUtf8(str){
-  return btoa(unescape(encodeURIComponent(str)));
+function b64EncodeUtf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64DecodeUtf8(str){ return decodeURIComponent(escape(atob(str))); }
+function getToken(){ return localStorage.getItem(TOKEN_KEY) || ""; }
+function slugify(label){
+  let base = label.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  if(!base) base = "page";
+  let id = base;
+  let n = 2;
+  while(pages.some(p => p.id === id)){ id = base + "-" + n; n++; }
+  return id;
 }
-function b64DecodeUtf8(str){
-  return decodeURIComponent(escape(atob(str)));
+function currentPageId(){
+  const hash = decodeURIComponent(location.hash.replace(/^#/, ""));
+  if(hash && pages.some(p => p.id === hash)) return hash;
+  return pages[0] ? pages[0].id : "home";
 }
-function getToken(){ return localStorage.getItem(TOKEN_KEY) || ''; }
+function applyData(json){
+  if(json.meta) meta = json.meta;
+  if(json.pages && json.pages.length) pages = json.pages;
+  if(json.postsByPage) postsByPage = json.postsByPage;
+  else if(json.posts) postsByPage = { home: json.posts };
+  pages.forEach(p => { if(!postsByPage[p.id]) postsByPage[p.id] = []; });
+}
 
 async function loadPublicData(){
   try{
-    const res = await fetch(`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${DATA_PATH}?t=${Date.now()}`);
-    if(res.ok){
-      const json = await res.json();
-      if(json.meta) meta = json.meta;
-      if(json.posts) posts = json.posts;
-    }
+    const res = await fetch("https://raw.githubusercontent.com/" + GH_OWNER + "/" + GH_REPO + "/" + GH_BRANCH + "/" + DATA_PATH + "?t=" + Date.now());
+    if(res.ok) applyData(await res.json());
   }catch(e){}
 }
 
 async function loadFreshViaApi(token){
-  const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${DATA_PATH}?ref=${GH_BRANCH}`, {
-    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+  const res = await fetch("https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + DATA_PATH + "?ref=" + GH_BRANCH, {
+    headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json" }
   });
-  if(res.status === 404){
-    currentSha = null;
-    return;
-  }
-  if(!res.ok) throw new Error('Could not reach the repository.');
+  if(res.status === 404){ currentSha = null; return; }
+  if(!res.ok) throw new Error("Could not reach the repository.");
   const json = await res.json();
   currentSha = json.sha;
-  const decoded = JSON.parse(b64DecodeUtf8(json.content));
-  if(decoded.meta) meta = decoded.meta;
-  if(decoded.posts) posts = decoded.posts;
+  applyData(JSON.parse(b64DecodeUtf8(json.content)));
 }
 
 async function commitData(message){
   const token = getToken();
   const body = {
     message,
-    content: b64EncodeUtf8(JSON.stringify({ meta, posts }, null, 2)),
+    content: b64EncodeUtf8(JSON.stringify({ meta, pages, postsByPage }, null, 2)),
     branch: GH_BRANCH
   };
   if(currentSha) body.sha = currentSha;
-  const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${DATA_PATH}`, {
-    method: 'PUT',
+  const res = await fetch("https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + DATA_PATH, {
+    method: "PUT",
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
+      "Authorization": "Bearer " + token,
+      "Accept": "application/vnd.github+json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(body)
   });
   if(!res.ok){
     const errBody = await res.json().catch(() => ({}));
-    throw new Error(errBody.message || 'Save failed.');
+    throw new Error(errBody.message || "Save failed.");
   }
   const json = await res.json();
   currentSha = json.content.sha;
 }
 
 function render(){
-  const app = document.getElementById('app');
-  const ownerBar = document.getElementById('ownerBar');
+  const app = document.getElementById("app");
+  const ownerBar = document.getElementById("ownerBar");
+  const pageId = currentPageId();
+  const posts = postsByPage[pageId] || [];
 
-  let platesHtml = '';
+  const navHtml = pages.map(p => {
+    const active = p.id === pageId;
+    let controls = "";
+    if(isOwner && active){
+      controls = '<span class="nav-tab-controls">'
+        + '<button class="nav-mini" title="Rename page" onclick="renamePage(\'' + p.id + '\')">Rename</button>';
+      if(pages.length > 1){
+        controls += '<button class="nav-mini danger" title="Delete page" onclick="deletePage(\'' + p.id + '\')">Delete</button>';
+      }
+      controls += "</span>";
+    }
+    return '<span class="nav-tab-wrap"><a class="nav-tab' + (active ? " active" : "") + '" href="#' + encodeURIComponent(p.id) + '">' + esc(p.label) + "</a>" + controls + "</span>";
+  }).join("");
+
+  let platesHtml = "";
   if(posts.length === 0){
-    platesHtml = `
-      <div class="empty">
-        <div class="eyebrow">Empty wall</div>
-        <p>${isOwner ? 'Nothing hung yet. Add your first image to begin the collection.' : 'No plates have been hung yet.'}</p>
-        ${isOwner ? '<button class="add-btn" onclick="openPostModal()">+ Add image</button>' : ''}
-      </div>`;
+    platesHtml = ""
+      + '<div class="empty">'
+      + '<div class="eyebrow">Empty wall</div>'
+      + "<p>" + (isOwner ? "Nothing hung yet on this page. Add your first image to begin." : "No plates have been hung yet.") + "</p>"
+      + (isOwner ? '<button class="add-btn" onclick="openPostModal()">+ Add image</button>' : "")
+      + "</div>";
   }else{
     platesHtml = posts.map((post, i) => {
       const reversed = i % 2 === 1;
-      return `
-      <div class="plate ${reversed ? 'rev' : ''}">
-        <div class="figure">
-          <img src="${esc(post.imageUrl)}" alt="${esc(post.title)}"
-               onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'broken',textContent:'Image could not be loaded'}))">
-        </div>
-        <div class="caption">
-          <div class="plate-num">Plate ${pad3(i+1)}</div>
-          <h2>${esc(post.title) || 'Untitled'}</h2>
-          <p>${esc(post.caption)}</p>
-          ${post.date ? `<div class="plate-date">${fmtDate(post.date)}</div>` : ''}
-          ${isOwner ? `
-          <div class="plate-actions">
-            <button class="icon-btn" onclick="openPostModal('${post.id}')">Edit</button>
-            <button class="icon-btn danger" onclick="deletePost('${post.id}')">Delete</button>
-          </div>` : ''}
-        </div>
-      </div>`;
-    }).join('');
+      return ""
+        + '<div class="plate' + (reversed ? " rev" : "") + '">'
+        + '<div class="figure">'
+        + '<img src="' + esc(post.imageUrl) + '" alt="' + esc(post.title) + '" '
+        + 'onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'broken\',textContent:\'Image could not be loaded\'}))">'
+        + "</div>"
+        + '<div class="caption">'
+        + '<div class="plate-num">Plate ' + pad3(i + 1) + "</div>"
+        + "<h2>" + (esc(post.title) || "Untitled") + "</h2>"
+        + "<p>" + esc(post.caption) + "</p>"
+        + (post.date ? '<div class="plate-date">' + fmtDate(post.date) + "</div>" : "")
+        + (isOwner
+            ? '<div class="plate-actions">'
+              + '<button class="icon-btn" onclick="openPostModal(\'' + post.id + '\')">Edit</button>'
+              + '<button class="icon-btn danger" onclick="deletePost(\'' + post.id + '\')">Delete</button>'
+              + "</div>"
+            : "")
+        + "</div></div>";
+    }).join("");
   }
 
-  app.innerHTML = `
-    <div class="top-row">
-      <div>
-        <div class="eyebrow">Gallery</div>
-        <h1 class="title" id="titleEl" ${isOwner ? 'contenteditable="true"' : ''}>${esc(meta.title)}</h1>
-        <p class="subtitle" id="subtitleEl" ${isOwner ? 'contenteditable="true"' : ''}>${esc(meta.subtitle)}</p>
-      </div>
-      ${isOwner ? '<button class="add-btn" onclick="openPostModal()">+ Add image</button>' : ''}
-    </div>
-    <div class="plates">${platesHtml}</div>
-  `;
+  app.innerHTML = ""
+    + '<div class="masthead">'
+    + '<div class="eyebrow">Gallery</div>'
+    + '<h1 class="title" id="titleEl"' + (isOwner ? ' contenteditable="true"' : "") + ">" + esc(meta.title) + "</h1>"
+    + '<p class="subtitle" id="subtitleEl"' + (isOwner ? ' contenteditable="true"' : "") + ">" + esc(meta.subtitle) + "</p>"
+    + "</div>"
+    + '<div class="nav">' + navHtml + (isOwner ? '<button class="nav-add" onclick="addPage()">+ Page</button>' : "") + "</div>"
+    + '<div class="top-row">' + (isOwner ? '<button class="add-btn" onclick="openPostModal()">+ Add image</button>' : "") + "</div>"
+    + '<div class="plates">' + platesHtml + "</div>";
 
   if(isOwner){
-    const t = document.getElementById('titleEl');
-    const s = document.getElementById('subtitleEl');
-    t.addEventListener('blur', async () => {
-      const newVal = t.textContent.trim() || 'Field Notes';
-      if(newVal !== meta.title){ meta.title = newVal; await commitData('Update gallery title'); }
+    const t = document.getElementById("titleEl");
+    const s = document.getElementById("subtitleEl");
+    t.addEventListener("blur", async () => {
+      const newVal = t.textContent.trim() || "Field Notes";
+      if(newVal !== meta.title){ meta.title = newVal; await commitData("Update gallery title"); }
     });
-    s.addEventListener('blur', async () => {
+    s.addEventListener("blur", async () => {
       const newVal = s.textContent.trim();
-      if(newVal !== meta.subtitle){ meta.subtitle = newVal; await commitData('Update gallery subtitle'); }
+      if(newVal !== meta.subtitle){ meta.subtitle = newVal; await commitData("Update gallery subtitle"); }
     });
   }
 
   ownerBar.innerHTML = isOwner
-    ? `<button class="owner-btn small" onclick="disconnectOwner()">Disconnect</button>
-       <button class="owner-btn active" onclick="exitOwnerMode()">Editing · Done</button>`
-    : `<button class="owner-btn" onclick="promptOwner()">Edit</button>`;
+    ? '<button class="owner-btn small" onclick="disconnectOwner()">Disconnect</button><button class="owner-btn active" onclick="exitOwnerMode()">Editing · Done</button>'
+    : '<button class="owner-btn" onclick="promptOwner()">Edit</button>';
 }
 
+window.addEventListener("hashchange", render);
+
 function openModal(html){
-  document.getElementById('modalRoot').innerHTML = `<div class="modal-overlay" id="ovl">${html}</div>`;
-  document.getElementById('ovl').addEventListener('click', (e) => { if(e.target.id === 'ovl') closeModal(); });
+  document.getElementById("modalRoot").innerHTML = '<div class="modal-overlay" id="ovl">' + html + "</div>";
+  document.getElementById("ovl").addEventListener("click", (e) => { if(e.target.id === "ovl") closeModal(); });
 }
-function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
+function closeModal(){ document.getElementById("modalRoot").innerHTML = ""; }
 
 async function promptOwner(){
   const saved = getToken();
   if(saved){
-    openModal(`<div class="modal"><h3>Connecting…</h3><p class="hint">Checking your saved access token.</p></div>`);
+    openModal('<div class="modal"><h3>Connecting…</h3><p class="hint">Checking your saved access token.</p></div>');
     try{
       await loadFreshViaApi(saved);
       isOwner = true;
@@ -528,7 +613,7 @@ async function promptOwner(){
       render();
     }catch(e){
       localStorage.removeItem(TOKEN_KEY);
-      showConnectModal('Your saved token no longer works. Connect again below.');
+      showConnectModal("Your saved token no longer works. Connect again below.");
     }
     return;
   }
@@ -536,29 +621,28 @@ async function promptOwner(){
 }
 
 function showConnectModal(errorMsg){
-  openModal(`
-    <div class="modal">
-      <h3>Connect this device</h3>
-      <p class="hint">To edit, this browser needs a GitHub personal access token with write access to <code>${esc(GH_OWNER)}/${esc(GH_REPO)}</code>. It's stored only in this browser — visitors never see it.</p>
-      <ol class="setup-steps">
-        <li>On GitHub, go to Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.</li>
-        <li>Under "Repository access", choose "Only select repositories" and pick this repo.</li>
-        <li>Under "Permissions" → "Repository permissions", set <b>Contents</b> to <b>Read and write</b>.</li>
-        <li>Generate the token and paste it below.</li>
-      </ol>
-      ${errorMsg ? `<div class="modal-error">${esc(errorMsg)}</div>` : ''}
-      <div id="err"></div>
-      <div class="field"><label>Personal access token</label><input type="password" id="fToken" placeholder="github_pat_…"></div>
-      <div class="modal-actions">
-        <button class="btn" onclick="closeModal()">Cancel</button>
-        <button class="btn primary" onclick="connectToken()">Connect</button>
-      </div>
-    </div>`);
+  openModal(""
+    + '<div class="modal">'
+    + "<h3>Connect this device</h3>"
+    + '<p class="hint">To edit, this browser needs a GitHub personal access token with write access to <code>' + esc(GH_OWNER) + "/" + esc(GH_REPO) + '</code>. It is stored only in this browser — visitors never see it.</p>'
+    + '<ol class="setup-steps">'
+    + "<li>On GitHub, go to Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.</li>"
+    + '<li>Under "Repository access", choose "Only select repositories" and pick this repo.</li>'
+    + '<li>Under "Permissions" → "Repository permissions", set <b>Contents</b> to <b>Read and write</b>.</li>'
+    + "<li>Generate the token and paste it below.</li>"
+    + "</ol>"
+    + (errorMsg ? '<div class="modal-error">' + esc(errorMsg) + "</div>" : "")
+    + '<div id="err"></div>'
+    + '<div class="field"><label>Personal access token</label><input type="password" id="fToken" placeholder="github_pat_…"></div>'
+    + '<div class="modal-actions">'
+    + '<button class="btn" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn primary" onclick="connectToken()">Connect</button>'
+    + "</div></div>");
 }
 
 async function connectToken(){
-  const token = document.getElementById('fToken').value.trim();
-  const err = document.getElementById('err');
+  const token = document.getElementById("fToken").value.trim();
+  const err = document.getElementById("err");
   if(!token){ err.innerHTML = '<div class="modal-error">Paste a token first.</div>'; return; }
   err.innerHTML = '<div class="modal-note">Checking access…</div>';
   try{
@@ -568,7 +652,7 @@ async function connectToken(){
     closeModal();
     render();
   }catch(e){
-    err.innerHTML = `<div class="modal-error">${esc(e.message || 'That token could not access this repository.')}</div>`;
+    err.innerHTML = '<div class="modal-error">' + esc(e.message || "That token could not access this repository.") + "</div>";
   }
 }
 
@@ -579,32 +663,127 @@ function disconnectOwner(){
 }
 function exitOwnerMode(){ isOwner = false; render(); }
 
+function addPage(){
+  openModal(""
+    + '<div class="modal"><h3>Add a page</h3>'
+    + '<p class="hint">Give it a name — it will appear as a tab in the nav bar.</p>'
+    + '<div id="err"></div>'
+    + '<div class="field"><label>Page name</label><input type="text" id="fPageLabel" placeholder="e.g. Photography"></div>'
+    + '<div class="modal-actions">'
+    + '<button class="btn" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn primary" onclick="confirmAddPage()">Add page</button>'
+    + "</div></div>");
+}
+
+async function confirmAddPage(){
+  const label = document.getElementById("fPageLabel").value.trim();
+  const err = document.getElementById("err");
+  if(!label){ err.innerHTML = '<div class="modal-error">Name the page first.</div>'; return; }
+  const id = slugify(label);
+  const prevPages = JSON.parse(JSON.stringify(pages));
+  const prevPosts = JSON.parse(JSON.stringify(postsByPage));
+  pages.push({ id, label });
+  postsByPage[id] = [];
+  try{
+    await commitData("Add page: " + label);
+    closeModal();
+    location.hash = "#" + encodeURIComponent(id);
+    render();
+  }catch(e){
+    pages = prevPages;
+    postsByPage = prevPosts;
+    err.innerHTML = '<div class="modal-error">' + esc(e.message || "Could not add the page.") + "</div>";
+  }
+}
+
+function renamePage(id){
+  const page = pages.find(p => p.id === id);
+  openModal(""
+    + '<div class="modal"><h3>Rename page</h3>'
+    + '<div id="err"></div>'
+    + '<div class="field"><label>Page name</label><input type="text" id="fPageLabel" value="' + esc(page.label) + '"></div>'
+    + '<div class="modal-actions">'
+    + '<button class="btn" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn primary" onclick="confirmRenamePage(\'' + id + '\')">Save</button>'
+    + "</div></div>");
+}
+
+async function confirmRenamePage(id){
+  const label = document.getElementById("fPageLabel").value.trim();
+  const err = document.getElementById("err");
+  if(!label){ err.innerHTML = '<div class="modal-error">Name cannot be empty.</div>'; return; }
+  const page = pages.find(p => p.id === id);
+  const prevLabel = page.label;
+  page.label = label;
+  try{
+    await commitData("Rename page to " + label);
+    closeModal();
+    render();
+  }catch(e){
+    page.label = prevLabel;
+    err.innerHTML = '<div class="modal-error">' + esc(e.message || "Could not rename the page.") + "</div>";
+  }
+}
+
+function deletePage(id){
+  const page = pages.find(p => p.id === id);
+  openModal(""
+    + '<div class="modal"><h3>Delete "' + esc(page.label) + '"?</h3>'
+    + '<p class="hint">This removes the page and every image and caption on it, for everyone. This cannot be undone.</p>'
+    + '<div id="err"></div>'
+    + '<div class="modal-actions">'
+    + '<button class="btn" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn primary" style="background:var(--rust);border-color:var(--rust)" onclick="confirmDeletePage(\'' + id + '\')">Delete page</button>'
+    + "</div></div>");
+}
+
+async function confirmDeletePage(id){
+  const err = document.getElementById("err");
+  const prevPages = JSON.parse(JSON.stringify(pages));
+  const prevPosts = JSON.parse(JSON.stringify(postsByPage));
+  pages = pages.filter(p => p.id !== id);
+  delete postsByPage[id];
+  try{
+    await commitData("Delete page");
+    closeModal();
+    location.hash = "#" + encodeURIComponent(pages[0].id);
+    render();
+  }catch(e){
+    pages = prevPages;
+    postsByPage = prevPosts;
+    err.innerHTML = '<div class="modal-error">' + esc(e.message || "Could not delete the page.") + "</div>";
+  }
+}
+
 function openPostModal(id){
+  const pageId = currentPageId();
+  const posts = postsByPage[pageId];
   const editing = !!id;
   const post = editing ? posts.find(p => p.id === id) : null;
-  const today = new Date().toISOString().slice(0,10);
-  openModal(`
-    <div class="modal">
-      <h3>${editing ? 'Edit plate' : 'Add image'}</h3>
-      <p class="hint">Paste a link to an image hosted elsewhere on the web, add a title, and write the text you want beside it.</p>
-      <div id="err"></div>
-      <div class="field"><label>Image URL</label><input type="text" id="fUrl" placeholder="https://…" value="${post ? esc(post.imageUrl) : ''}"></div>
-      <div class="field"><label>Title</label><input type="text" id="fTitle" placeholder="Give it a title" value="${post ? esc(post.title) : ''}"></div>
-      <div class="field"><label>Caption</label><textarea id="fCaption" placeholder="What's the story here?">${post ? esc(post.caption) : ''}</textarea></div>
-      <div class="field"><label>Date</label><input type="date" id="fDate" value="${post ? esc(post.date || today) : today}"></div>
-      <div class="modal-actions">
-        <button class="btn" onclick="closeModal()">Cancel</button>
-        <button class="btn primary" onclick="savePost(${editing ? `'${id}'` : 'null'})">${editing ? 'Save changes' : 'Add to gallery'}</button>
-      </div>
-    </div>`);
+  const today = new Date().toISOString().slice(0, 10);
+  openModal(""
+    + '<div class="modal">'
+    + "<h3>" + (editing ? "Edit plate" : "Add image") + "</h3>"
+    + '<p class="hint">Paste a link to an image hosted elsewhere on the web, add a title, and write the text you want beside it.</p>'
+    + '<div id="err"></div>'
+    + '<div class="field"><label>Image URL</label><input type="text" id="fUrl" placeholder="https://…" value="' + (post ? esc(post.imageUrl) : "") + '"></div>'
+    + '<div class="field"><label>Title</label><input type="text" id="fTitle" placeholder="Give it a title" value="' + (post ? esc(post.title) : "") + '"></div>'
+    + '<div class="field"><label>Caption</label><textarea id="fCaption" placeholder="What is the story here?">' + (post ? esc(post.caption) : "") + "</textarea></div>"
+    + '<div class="field"><label>Date</label><input type="date" id="fDate" value="' + (post ? esc(post.date || today) : today) + '"></div>'
+    + '<div class="modal-actions">'
+    + '<button class="btn" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn primary" onclick="savePost(' + (editing ? "'" + id + "'" : "null") + ')">' + (editing ? "Save changes" : "Add to gallery") + "</button>"
+    + "</div></div>");
 }
 
 async function savePost(id){
-  const url = document.getElementById('fUrl').value.trim();
-  const title = document.getElementById('fTitle').value.trim();
-  const caption = document.getElementById('fCaption').value.trim();
-  const date = document.getElementById('fDate').value;
-  const err = document.getElementById('err');
+  const pageId = currentPageId();
+  const posts = postsByPage[pageId];
+  const url = document.getElementById("fUrl").value.trim();
+  const title = document.getElementById("fTitle").value.trim();
+  const caption = document.getElementById("fCaption").value.trim();
+  const date = document.getElementById("fDate").value;
+  const err = document.getElementById("err");
   if(!url){ err.innerHTML = '<div class="modal-error">An image URL is required.</div>'; return; }
 
   err.innerHTML = '<div class="modal-note">Saving…</div>';
@@ -613,42 +792,42 @@ async function savePost(id){
     const post = posts.find(p => p.id === id);
     post.imageUrl = url; post.title = title; post.caption = caption; post.date = date;
   }else{
-    posts.push({ id: 'p' + Date.now() + Math.random().toString(36).slice(2,7), imageUrl: url, title, caption, date });
+    posts.push({ id: "p" + Date.now() + Math.random().toString(36).slice(2, 7), imageUrl: url, title, caption, date });
   }
   try{
-    await commitData(id ? 'Edit gallery plate' : 'Add gallery plate');
+    await commitData(id ? "Edit gallery plate" : "Add gallery plate");
     closeModal();
     render();
   }catch(e){
-    posts = prevPosts;
-    err.innerHTML = `<div class="modal-error">${esc(e.message || 'Save failed. Try again.')}</div>`;
+    postsByPage[pageId] = prevPosts;
+    err.innerHTML = '<div class="modal-error">' + esc(e.message || "Save failed. Try again.") + "</div>";
   }
 }
 
 function deletePost(id){
-  openModal(`
-    <div class="modal">
-      <h3>Delete this plate?</h3>
-      <p class="hint">This removes the image and text from the gallery for everyone. This can't be undone.</p>
-      <div id="err"></div>
-      <div class="modal-actions">
-        <button class="btn" onclick="closeModal()">Cancel</button>
-        <button class="btn primary" style="background:var(--rust);border-color:var(--rust)" onclick="confirmDelete('${id}')">Delete</button>
-      </div>
-    </div>`);
+  openModal(""
+    + '<div class="modal"><h3>Delete this plate?</h3>'
+    + '<p class="hint">This removes the image and text from the gallery for everyone. This cannot be undone.</p>'
+    + '<div id="err"></div>'
+    + '<div class="modal-actions">'
+    + '<button class="btn" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn primary" style="background:var(--rust);border-color:var(--rust)" onclick="confirmDelete(\'' + id + '\')">Delete</button>'
+    + "</div></div>");
 }
 
 async function confirmDelete(id){
-  const err = document.getElementById('err');
+  const pageId = currentPageId();
+  const posts = postsByPage[pageId];
+  const err = document.getElementById("err");
   const prevPosts = JSON.parse(JSON.stringify(posts));
-  posts = posts.filter(p => p.id !== id);
+  postsByPage[pageId] = posts.filter(p => p.id !== id);
   try{
-    await commitData('Delete gallery plate');
+    await commitData("Delete gallery plate");
     closeModal();
     render();
   }catch(e){
-    posts = prevPosts;
-    err.innerHTML = `<div class="modal-error">${esc(e.message || 'Delete failed. Try again.')}</div>`;
+    postsByPage[pageId] = prevPosts;
+    err.innerHTML = '<div class="modal-error">' + esc(e.message || "Delete failed. Try again.") + "</div>";
   }
 }
 
@@ -661,6 +840,12 @@ window.connectToken = connectToken;
 window.disconnectOwner = disconnectOwner;
 window.exitOwnerMode = exitOwnerMode;
 window.closeModal = closeModal;
+window.addPage = addPage;
+window.confirmAddPage = confirmAddPage;
+window.renamePage = renamePage;
+window.confirmRenamePage = confirmRenamePage;
+window.deletePage = deletePage;
+window.confirmDeletePage = confirmDeletePage;
 
 (async function init(){
   await loadPublicData();
