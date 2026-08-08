@@ -359,8 +359,25 @@ h1.title{
   background:#fff;
   color:var(--ink);
 }
+.field input[type="file"]{padding:8px;}
 .field textarea{resize:vertical;min-height:90px;font-family:inherit;}
 .field input:focus, .field textarea:focus{outline:none;border-color:var(--brass-dim);}
+.file-preview{
+  width:100%;
+  max-height:220px;
+  object-fit:contain;
+  border:1px solid #C9C2AE;
+  border-radius:2px;
+  margin-top:10px;
+  background:#fff;
+  display:block;
+}
+.current-label{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;
+  color:#6B6658;
+  margin-top:6px;
+}
 .modal-actions{
   display:flex;
   justify-content:flex-end;
@@ -381,6 +398,7 @@ h1.title{
 }
 .btn.primary{background:var(--ink);color:var(--paper);}
 .btn:hover{opacity:.8;}
+.btn:disabled{opacity:.5;cursor:default;}
 .modal-error{
   color:var(--rust);
   font-size:12.5px;
@@ -425,6 +443,7 @@ const GH_REPO   = "KrishnaPeddiGallery";
 const GH_BRANCH = "main";
 const DATA_PATH = "data.json";
 const TOKEN_KEY = "gallery-gh-token";
+const MAX_IMAGE_BYTES = 25 * 1024 * 1024;
 
 let meta = { title: "Field Notes", subtitle: "A running collection of images, and the small stories behind each one." };
 let pages = [
@@ -433,7 +452,7 @@ let pages = [
 ];
 let postsByPage = { home: [], photography: [] };
 let isOwner = false;
-let currentSha = null;
+let pendingFile = null;
 
 function esc(s){
   const d = document.createElement("div");
@@ -470,6 +489,22 @@ function applyData(json){
   else if(json.posts) postsByPage = { home: json.posts };
   pages.forEach(p => { if(!postsByPage[p.id]) postsByPage[p.id] = []; });
 }
+function readFileAsBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = () => reject(new Error("Could not read that file."));
+    reader.readAsDataURL(file);
+  });
+}
+function safeFileName(name){
+  const parts = name.split(".");
+  const ext = parts.length > 1 ? parts.pop().toLowerCase().replace(/[^a-z0-9]/g, "") : "jpg";
+  return "img-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7) + "." + (ext || "jpg");
+}
+function rawUrlFor(path){
+  return "https://raw.githubusercontent.com/" + GH_OWNER + "/" + GH_REPO + "/" + GH_BRANCH + "/" + path.split("/").map(encodeURIComponent).join("/");
+}
 
 async function loadPublicData(){
   try{
@@ -482,21 +517,31 @@ async function loadFreshViaApi(token){
   const res = await fetch("https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + DATA_PATH + "?ref=" + GH_BRANCH, {
     headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json" }
   });
-  if(res.status === 404){ currentSha = null; return; }
+  if(res.status === 404) return;
   if(!res.ok) throw new Error("Could not reach the repository.");
   const json = await res.json();
-  currentSha = json.sha;
   applyData(JSON.parse(b64DecodeUtf8(json.content)));
+}
+
+async function getDataSha(token){
+  const res = await fetch("https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + DATA_PATH + "?ref=" + GH_BRANCH, {
+    headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json" }
+  });
+  if(res.status === 404) return null;
+  if(!res.ok) throw new Error("Could not reach the repository.");
+  const json = await res.json();
+  return json.sha;
 }
 
 async function commitData(message){
   const token = getToken();
+  const sha = await getDataSha(token);
   const body = {
     message,
     content: b64EncodeUtf8(JSON.stringify({ meta, pages, postsByPage }, null, 2)),
     branch: GH_BRANCH
   };
-  if(currentSha) body.sha = currentSha;
+  if(sha) body.sha = sha;
   const res = await fetch("https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + DATA_PATH, {
     method: "PUT",
     headers: {
@@ -510,8 +555,57 @@ async function commitData(message){
     const errBody = await res.json().catch(() => ({}));
     throw new Error(errBody.message || "Save failed.");
   }
-  const json = await res.json();
-  currentSha = json.content.sha;
+}
+
+async function ghApi(path, token, options){
+  const res = await fetch("https://api.github.com" + path, Object.assign({
+    headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json", "Content-Type": "application/json" }
+  }, options));
+  if(!res.ok){
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody.message || "GitHub request failed.");
+  }
+  return res.json();
+}
+
+async function commitImageAndData(file, message){
+  const token = getToken();
+  const base64 = await readFileAsBase64(file);
+  const imagePath = "images/" + safeFileName(file.name);
+
+  const refJson = await ghApi("/repos/" + GH_OWNER + "/" + GH_REPO + "/git/refs/heads/" + GH_BRANCH, token);
+  const latestCommitSha = refJson.object.sha;
+
+  const commitJson = await ghApi("/repos/" + GH_OWNER + "/" + GH_REPO + "/git/commits/" + latestCommitSha, token);
+  const baseTreeSha = commitJson.tree.sha;
+
+  const blobJson = await ghApi("/repos/" + GH_OWNER + "/" + GH_REPO + "/git/blobs", token, {
+    method: "POST",
+    body: JSON.stringify({ content: base64, encoding: "base64" })
+  });
+
+  const treeJson = await ghApi("/repos/" + GH_OWNER + "/" + GH_REPO + "/git/trees", token, {
+    method: "POST",
+    body: JSON.stringify({
+      base_tree: baseTreeSha,
+      tree: [
+        { path: imagePath, mode: "100644", type: "blob", sha: blobJson.sha },
+        { path: DATA_PATH, mode: "100644", type: "blob", content: JSON.stringify({ meta, pages, postsByPage }, null, 2) }
+      ]
+    })
+  });
+
+  const newCommitJson = await ghApi("/repos/" + GH_OWNER + "/" + GH_REPO + "/git/commits", token, {
+    method: "POST",
+    body: JSON.stringify({ message, tree: treeJson.sha, parents: [latestCommitSha] })
+  });
+
+  await ghApi("/repos/" + GH_OWNER + "/" + GH_REPO + "/git/refs/heads/" + GH_BRANCH, token, {
+    method: "PATCH",
+    body: JSON.stringify({ sha: newCommitJson.sha })
+  });
+
+  return rawUrlFor(imagePath);
 }
 
 function render(){
@@ -600,7 +694,7 @@ function openModal(html){
   document.getElementById("modalRoot").innerHTML = '<div class="modal-overlay" id="ovl">' + html + "</div>";
   document.getElementById("ovl").addEventListener("click", (e) => { if(e.target.id === "ovl") closeModal(); });
 }
-function closeModal(){ document.getElementById("modalRoot").innerHTML = ""; }
+function closeModal(){ document.getElementById("modalRoot").innerHTML = ""; pendingFile = null; }
 
 async function promptOwner(){
   const saved = getToken();
@@ -761,45 +855,85 @@ function openPostModal(id){
   const editing = !!id;
   const post = editing ? posts.find(p => p.id === id) : null;
   const today = new Date().toISOString().slice(0, 10);
+  pendingFile = null;
   openModal(""
     + '<div class="modal">'
     + "<h3>" + (editing ? "Edit plate" : "Add image") + "</h3>"
-    + '<p class="hint">Paste a link to an image hosted elsewhere on the web, add a title, and write the text you want beside it.</p>'
+    + '<p class="hint">Upload a photo from your computer, give it a title, and write the text you want beside it.</p>'
     + '<div id="err"></div>'
-    + '<div class="field"><label>Image URL</label><input type="text" id="fUrl" placeholder="https://…" value="' + (post ? esc(post.imageUrl) : "") + '"></div>'
+    + '<div class="field"><label>Photo</label><input type="file" id="fFile" accept="image/*" onchange="onFileChosen()">'
+    + (editing && post.imageUrl ? '<div class="current-label">Current image shown below. Choose a new file only if you want to replace it.</div><img class="file-preview" id="filePreview" src="' + esc(post.imageUrl) + '">' : '<img class="file-preview" id="filePreview" style="display:none">')
+    + "</div>"
     + '<div class="field"><label>Title</label><input type="text" id="fTitle" placeholder="Give it a title" value="' + (post ? esc(post.title) : "") + '"></div>'
     + '<div class="field"><label>Caption</label><textarea id="fCaption" placeholder="What is the story here?">' + (post ? esc(post.caption) : "") + "</textarea></div>"
     + '<div class="field"><label>Date</label><input type="date" id="fDate" value="' + (post ? esc(post.date || today) : today) + '"></div>'
     + '<div class="modal-actions">'
     + '<button class="btn" onclick="closeModal()">Cancel</button>'
-    + '<button class="btn primary" onclick="savePost(' + (editing ? "'" + id + "'" : "null") + ')">' + (editing ? "Save changes" : "Add to gallery") + "</button>"
+    + '<button class="btn primary" id="saveBtn" onclick="savePost(' + (editing ? "'" + id + "'" : "null") + ')">' + (editing ? "Save changes" : "Add to gallery") + "</button>"
     + "</div></div>");
+}
+
+function onFileChosen(){
+  const input = document.getElementById("fFile");
+  const preview = document.getElementById("filePreview");
+  const err = document.getElementById("err");
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > MAX_IMAGE_BYTES){
+    err.innerHTML = '<div class="modal-error">That file is larger than 25MB. Choose a smaller one.</div>';
+    input.value = "";
+    return;
+  }
+  err.innerHTML = "";
+  pendingFile = file;
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
 }
 
 async function savePost(id){
   const pageId = currentPageId();
   const posts = postsByPage[pageId];
-  const url = document.getElementById("fUrl").value.trim();
   const title = document.getElementById("fTitle").value.trim();
   const caption = document.getElementById("fCaption").value.trim();
   const date = document.getElementById("fDate").value;
   const err = document.getElementById("err");
-  if(!url){ err.innerHTML = '<div class="modal-error">An image URL is required.</div>'; return; }
+  const saveBtn = document.getElementById("saveBtn");
 
-  err.innerHTML = '<div class="modal-note">Saving…</div>';
-  const prevPosts = JSON.parse(JSON.stringify(posts));
-  if(id){
-    const post = posts.find(p => p.id === id);
-    post.imageUrl = url; post.title = title; post.caption = caption; post.date = date;
-  }else{
-    posts.push({ id: "p" + Date.now() + Math.random().toString(36).slice(2, 7), imageUrl: url, title, caption, date });
+  const existingPost = id ? posts.find(p => p.id === id) : null;
+  if(!pendingFile && !(existingPost && existingPost.imageUrl)){
+    err.innerHTML = '<div class="modal-error">Choose a photo to upload.</div>';
+    return;
   }
+
+  saveBtn.disabled = true;
+  err.innerHTML = '<div class="modal-note">' + (pendingFile ? "Uploading photo…" : "Saving…") + "</div>";
+
+  const prevPosts = JSON.parse(JSON.stringify(posts));
+  let newPostId = id;
   try{
-    await commitData(id ? "Edit gallery plate" : "Add gallery plate");
+    let imageUrl = existingPost ? existingPost.imageUrl : null;
+
+    if(id){
+      const post = posts.find(p => p.id === id);
+      post.title = title; post.caption = caption; post.date = date;
+    }else{
+      newPostId = "p" + Date.now() + Math.random().toString(36).slice(2, 7);
+      posts.push({ id: newPostId, imageUrl: "", title, caption, date });
+    }
+
+    if(pendingFile){
+      imageUrl = await commitImageAndData(pendingFile, id ? "Replace image on gallery plate" : "Add gallery plate with image");
+      const post = posts.find(p => p.id === newPostId);
+      post.imageUrl = imageUrl;
+    }else{
+      await commitData(id ? "Edit gallery plate" : "Add gallery plate");
+    }
+
     closeModal();
     render();
   }catch(e){
     postsByPage[pageId] = prevPosts;
+    saveBtn.disabled = false;
     err.innerHTML = '<div class="modal-error">' + esc(e.message || "Save failed. Try again.") + "</div>";
   }
 }
@@ -832,6 +966,7 @@ async function confirmDelete(id){
 }
 
 window.openPostModal = openPostModal;
+window.onFileChosen = onFileChosen;
 window.savePost = savePost;
 window.deletePost = deletePost;
 window.confirmDelete = confirmDelete;
