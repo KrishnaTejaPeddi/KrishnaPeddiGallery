@@ -14,15 +14,7 @@
     }
   ],
   "postsByPage": {
-    "home": [
-      {
-        "id": "p1786190726127mykrg",
-        "imageUrl": "",
-        "title": "Angler fish",
-        "caption": "It's an Anglerfish",
-        "date": "2026-08-08"
-      }
-    ],
+    "home": [],
     "photography": []
   }
 }
