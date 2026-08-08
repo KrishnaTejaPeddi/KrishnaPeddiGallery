@@ -14,7 +14,15 @@
     }
   ],
   "postsByPage": {
-    "home": [],
+    "home": [
+      {
+        "id": "p1786191040684t4s1h",
+        "imageUrl": "",
+        "title": "basic pattern",
+        "caption": "Made sometime in 2025. I do not have the exact date right now.",
+        "date": "2026-08-08"
+      }
+    ],
     "photography": []
   }
 }
