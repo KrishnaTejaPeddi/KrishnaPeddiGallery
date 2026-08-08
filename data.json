@@ -143,9 +143,16 @@
       },
       {
         "id": "p1786192379119t5ejb",
-        "imageUrl": "",
+        "imageUrl": "https://raw.githubusercontent.com/KrishnaTejaPeddi/KrishnaPeddiGallery/main/images/img-1786192379125-bd8wv.webp",
         "title": "something is eating saturn",
         "caption": "drawn on june 19th 2026",
+        "date": "2026-08-08"
+      },
+      {
+        "id": "p1786192432284mqzkp",
+        "imageUrl": "",
+        "title": "mole man",
+        "caption": "drawn on june 20th 2026",
         "date": "2026-08-08"
       }
     ],
