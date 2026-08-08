@@ -95,6 +95,7 @@ h1.title{
   transition:background .15s ease, color .15s ease;
 }
 .add-btn:hover{background:var(--brass);color:var(--ink);}
+.add-btn:disabled{opacity:.5;cursor:default;}
 
 .plates{
   display:flex;
@@ -123,7 +124,6 @@ h1.title{
   height:auto;
   max-height:520px;
   object-fit:cover;
-  background:#0000;
 }
 .figure .broken{
   width:100%;
@@ -232,6 +232,7 @@ h1.title{
 }
 .owner-btn.active{color:var(--moss);border-color:var(--moss);}
 .owner-btn:hover{border-color:var(--brass);color:var(--brass);}
+.owner-btn.small{font-size:11px;padding:8px 12px;}
 
 .modal-overlay{
   position:fixed;inset:0;
@@ -239,14 +240,16 @@ h1.title{
   display:flex;align-items:center;justify-content:center;
   z-index:100;
   padding:20px;
+  overflow-y:auto;
 }
 .modal{
   background:var(--paper);
   color:var(--ink);
   width:100%;
-  max-width:420px;
+  max-width:460px;
   padding:28px;
   border-radius:2px;
+  margin:auto;
 }
 .modal h3{
   font-family:'Fraunces', serif;
@@ -259,7 +262,21 @@ h1.title{
   font-size:13px;
   color:#6B6658;
   margin:0 0 20px;
-  line-height:1.5;
+  line-height:1.55;
+}
+.modal .hint code{
+  background:#E2DCCB;
+  padding:1px 5px;
+  border-radius:2px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+}
+.modal ol.setup-steps{
+  font-size:13px;
+  color:#3A362E;
+  line-height:1.6;
+  margin:0 0 20px;
+  padding-left:20px;
 }
 .field{margin-bottom:16px;}
 .field label{
@@ -288,6 +305,7 @@ h1.title{
   justify-content:flex-end;
   gap:10px;
   margin-top:22px;
+  flex-wrap:wrap;
 }
 .btn{
   font-family:'IBM Plex Mono', monospace;
@@ -305,6 +323,11 @@ h1.title{
 .modal-error{
   color:var(--rust);
   font-size:12.5px;
+  margin:-8px 0 16px;
+}
+.modal-note{
+  font-size:12.5px;
+  color:var(--moss);
   margin:-8px 0 16px;
 }
 
@@ -336,52 +359,89 @@ h1.title{
 <div id="modalRoot"></div>
 
 <script>
-const META_KEY = 'gallery:meta';
-const POSTS_KEY = 'gallery:posts';
-const PASS_KEY = 'gallery:owner-pass';
+/* ── Edit these two lines to match your GitHub repo before uploading ── */
+const GH_OWNER  = 'KrishnaTejaPeddi';
+const GH_REPO   = 'KrishnaPeddiGallery';
+/* ── ────────────────────────────────────────────────────────────── */
+const GH_BRANCH = 'main';
+const DATA_PATH = 'data.json';
+const TOKEN_KEY = 'gallery-gh-token';
 
 let meta = { title: 'Field Notes', subtitle: 'A running collection of images, and the small stories behind each one.' };
 let posts = [];
 let isOwner = false;
-let passcodeExists = false;
+let currentSha = null;
 
 function esc(s){
   const d = document.createElement('div');
   d.textContent = s == null ? '' : s;
   return d.innerHTML;
 }
-
 function pad3(n){ return String(n).padStart(3,'0'); }
-
 function fmtDate(iso){
   if(!iso) return '';
   const d = new Date(iso + 'T00:00:00');
   if(isNaN(d)) return iso;
   return d.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
 }
+function b64EncodeUtf8(str){
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function b64DecodeUtf8(str){
+  return decodeURIComponent(escape(atob(str)));
+}
+function getToken(){ return localStorage.getItem(TOKEN_KEY) || ''; }
 
-async function loadAll(){
+async function loadPublicData(){
   try{
-    const m = await window.storage.get(META_KEY, true);
-    if(m && m.value) meta = JSON.parse(m.value);
+    const res = await fetch(`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${DATA_PATH}?t=${Date.now()}`);
+    if(res.ok){
+      const json = await res.json();
+      if(json.meta) meta = json.meta;
+      if(json.posts) posts = json.posts;
+    }
   }catch(e){}
-  try{
-    const p = await window.storage.get(POSTS_KEY, true);
-    if(p && p.value) posts = JSON.parse(p.value);
-  }catch(e){}
-  try{
-    const pc = await window.storage.get(PASS_KEY, true);
-    passcodeExists = !!(pc && pc.value);
-  }catch(e){
-    passcodeExists = false;
+}
+
+async function loadFreshViaApi(token){
+  const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${DATA_PATH}?ref=${GH_BRANCH}`, {
+    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+  });
+  if(res.status === 404){
+    currentSha = null;
+    return;
   }
+  if(!res.ok) throw new Error('Could not reach the repository.');
+  const json = await res.json();
+  currentSha = json.sha;
+  const decoded = JSON.parse(b64DecodeUtf8(json.content));
+  if(decoded.meta) meta = decoded.meta;
+  if(decoded.posts) posts = decoded.posts;
 }
 
-async function saveMeta(){
-  await window.storage.set(META_KEY, JSON.stringify(meta), true);
-}
-async function savePosts(){
-  await window.storage.set(POSTS_KEY, JSON.stringify(posts), true);
+async function commitData(message){
+  const token = getToken();
+  const body = {
+    message,
+    content: b64EncodeUtf8(JSON.stringify({ meta, posts }, null, 2)),
+    branch: GH_BRANCH
+  };
+  if(currentSha) body.sha = currentSha;
+  const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${DATA_PATH}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    const errBody = await res.json().catch(() => ({}));
+    throw new Error(errBody.message || 'Save failed.');
+  }
+  const json = await res.json();
+  currentSha = json.content.sha;
 }
 
 function render(){
@@ -436,100 +496,88 @@ function render(){
     const t = document.getElementById('titleEl');
     const s = document.getElementById('subtitleEl');
     t.addEventListener('blur', async () => {
-      meta.title = t.textContent.trim() || 'Field Notes';
-      await saveMeta();
+      const newVal = t.textContent.trim() || 'Field Notes';
+      if(newVal !== meta.title){ meta.title = newVal; await commitData('Update gallery title'); }
     });
     s.addEventListener('blur', async () => {
-      meta.subtitle = s.textContent.trim();
-      await saveMeta();
+      const newVal = s.textContent.trim();
+      if(newVal !== meta.subtitle){ meta.subtitle = newVal; await commitData('Update gallery subtitle'); }
     });
   }
 
   ownerBar.innerHTML = isOwner
-    ? `<button class="owner-btn active" onclick="exitOwnerMode()">Editing · Done</button>`
+    ? `<button class="owner-btn small" onclick="disconnectOwner()">Disconnect</button>
+       <button class="owner-btn active" onclick="exitOwnerMode()">Editing · Done</button>`
     : `<button class="owner-btn" onclick="promptOwner()">Edit</button>`;
 }
 
 function openModal(html){
   document.getElementById('modalRoot').innerHTML = `<div class="modal-overlay" id="ovl">${html}</div>`;
-  document.getElementById('ovl').addEventListener('click', (e) => {
-    if(e.target.id === 'ovl') closeModal();
-  });
+  document.getElementById('ovl').addEventListener('click', (e) => { if(e.target.id === 'ovl') closeModal(); });
 }
-function closeModal(){
-  document.getElementById('modalRoot').innerHTML = '';
-}
+function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
 
-function promptOwner(){
-  if(!passcodeExists){
-    openModal(`
-      <div class="modal">
-        <h3>Set up editing</h3>
-        <p class="hint">You're the only one who should be able to edit this gallery. Choose a passcode — you'll enter it each time you want to make changes. Anyone with the passcode can edit, so keep it private.</p>
-        <div id="err"></div>
-        <div class="field"><label>New passcode</label><input type="password" id="p1"></div>
-        <div class="field"><label>Confirm passcode</label><input type="password" id="p2"></div>
-        <div class="modal-actions">
-          <button class="btn" onclick="closeModal()">Cancel</button>
-          <button class="btn primary" onclick="setupPasscode()">Save passcode</button>
-        </div>
-      </div>`);
-  }else{
-    openModal(`
-      <div class="modal">
-        <h3>Enter passcode</h3>
-        <p class="hint">Enter your passcode to edit this gallery.</p>
-        <div id="err"></div>
-        <div class="field"><label>Passcode</label><input type="password" id="p1" onkeydown="if(event.key==='Enter')checkPasscode()"></div>
-        <div class="modal-actions">
-          <button class="btn" onclick="closeModal()">Cancel</button>
-          <button class="btn primary" onclick="checkPasscode()">Unlock</button>
-        </div>
-      </div>`);
-    setTimeout(() => document.getElementById('p1')?.focus(), 50);
-  }
-}
-
-async function setupPasscode(){
-  const p1 = document.getElementById('p1').value;
-  const p2 = document.getElementById('p2').value;
-  const err = document.getElementById('err');
-  if(!p1 || p1.length < 4){
-    err.innerHTML = '<div class="modal-error">Passcode should be at least 4 characters.</div>';
-    return;
-  }
-  if(p1 !== p2){
-    err.innerHTML = "<div class=\"modal-error\">Passcodes don't match.</div>";
-    return;
-  }
-  await window.storage.set(PASS_KEY, p1, true);
-  passcodeExists = true;
-  isOwner = true;
-  closeModal();
-  render();
-}
-
-async function checkPasscode(){
-  const p1 = document.getElementById('p1').value;
-  const err = document.getElementById('err');
-  try{
-    const pc = await window.storage.get(PASS_KEY, true);
-    if(pc && pc.value === p1){
+async function promptOwner(){
+  const saved = getToken();
+  if(saved){
+    openModal(`<div class="modal"><h3>Connecting…</h3><p class="hint">Checking your saved access token.</p></div>`);
+    try{
+      await loadFreshViaApi(saved);
       isOwner = true;
       closeModal();
       render();
-    }else{
-      err.innerHTML = '<div class="modal-error">That passcode is not correct.</div>';
+    }catch(e){
+      localStorage.removeItem(TOKEN_KEY);
+      showConnectModal('Your saved token no longer works. Connect again below.');
     }
+    return;
+  }
+  showConnectModal();
+}
+
+function showConnectModal(errorMsg){
+  openModal(`
+    <div class="modal">
+      <h3>Connect this device</h3>
+      <p class="hint">To edit, this browser needs a GitHub personal access token with write access to <code>${esc(GH_OWNER)}/${esc(GH_REPO)}</code>. It's stored only in this browser — visitors never see it.</p>
+      <ol class="setup-steps">
+        <li>On GitHub, go to Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.</li>
+        <li>Under "Repository access", choose "Only select repositories" and pick this repo.</li>
+        <li>Under "Permissions" → "Repository permissions", set <b>Contents</b> to <b>Read and write</b>.</li>
+        <li>Generate the token and paste it below.</li>
+      </ol>
+      ${errorMsg ? `<div class="modal-error">${esc(errorMsg)}</div>` : ''}
+      <div id="err"></div>
+      <div class="field"><label>Personal access token</label><input type="password" id="fToken" placeholder="github_pat_…"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancel</button>
+        <button class="btn primary" onclick="connectToken()">Connect</button>
+      </div>
+    </div>`);
+}
+
+async function connectToken(){
+  const token = document.getElementById('fToken').value.trim();
+  const err = document.getElementById('err');
+  if(!token){ err.innerHTML = '<div class="modal-error">Paste a token first.</div>'; return; }
+  err.innerHTML = '<div class="modal-note">Checking access…</div>';
+  try{
+    await loadFreshViaApi(token);
+    localStorage.setItem(TOKEN_KEY, token);
+    isOwner = true;
+    closeModal();
+    render();
   }catch(e){
-    err.innerHTML = '<div class="modal-error">Could not verify passcode. Try again.</div>';
+    err.innerHTML = `<div class="modal-error">${esc(e.message || 'That token could not access this repository.')}</div>`;
   }
 }
 
-function exitOwnerMode(){
+function disconnectOwner(){
+  localStorage.removeItem(TOKEN_KEY);
   isOwner = false;
   render();
 }
+function exitOwnerMode(){ isOwner = false; render(); }
 
 function openPostModal(id){
   const editing = !!id;
@@ -557,35 +605,32 @@ async function savePost(id){
   const caption = document.getElementById('fCaption').value.trim();
   const date = document.getElementById('fDate').value;
   const err = document.getElementById('err');
+  if(!url){ err.innerHTML = '<div class="modal-error">An image URL is required.</div>'; return; }
 
-  if(!url){
-    err.innerHTML = '<div class="modal-error">An image URL is required.</div>';
-    return;
-  }
-
+  err.innerHTML = '<div class="modal-note">Saving…</div>';
+  const prevPosts = JSON.parse(JSON.stringify(posts));
   if(id){
     const post = posts.find(p => p.id === id);
-    post.imageUrl = url;
-    post.title = title;
-    post.caption = caption;
-    post.date = date;
+    post.imageUrl = url; post.title = title; post.caption = caption; post.date = date;
   }else{
-    posts.push({
-      id: 'p' + Date.now() + Math.random().toString(36).slice(2,7),
-      imageUrl: url,
-      title, caption, date
-    });
+    posts.push({ id: 'p' + Date.now() + Math.random().toString(36).slice(2,7), imageUrl: url, title, caption, date });
   }
-  await savePosts();
-  closeModal();
-  render();
+  try{
+    await commitData(id ? 'Edit gallery plate' : 'Add gallery plate');
+    closeModal();
+    render();
+  }catch(e){
+    posts = prevPosts;
+    err.innerHTML = `<div class="modal-error">${esc(e.message || 'Save failed. Try again.')}</div>`;
+  }
 }
 
-async function deletePost(id){
+function deletePost(id){
   openModal(`
     <div class="modal">
       <h3>Delete this plate?</h3>
       <p class="hint">This removes the image and text from the gallery for everyone. This can't be undone.</p>
+      <div id="err"></div>
       <div class="modal-actions">
         <button class="btn" onclick="closeModal()">Cancel</button>
         <button class="btn primary" style="background:var(--rust);border-color:var(--rust)" onclick="confirmDelete('${id}')">Delete</button>
@@ -594,10 +639,17 @@ async function deletePost(id){
 }
 
 async function confirmDelete(id){
+  const err = document.getElementById('err');
+  const prevPosts = JSON.parse(JSON.stringify(posts));
   posts = posts.filter(p => p.id !== id);
-  await savePosts();
-  closeModal();
-  render();
+  try{
+    await commitData('Delete gallery plate');
+    closeModal();
+    render();
+  }catch(e){
+    posts = prevPosts;
+    err.innerHTML = `<div class="modal-error">${esc(e.message || 'Delete failed. Try again.')}</div>`;
+  }
 }
 
 window.openPostModal = openPostModal;
@@ -605,13 +657,13 @@ window.savePost = savePost;
 window.deletePost = deletePost;
 window.confirmDelete = confirmDelete;
 window.promptOwner = promptOwner;
-window.setupPasscode = setupPasscode;
-window.checkPasscode = checkPasscode;
+window.connectToken = connectToken;
+window.disconnectOwner = disconnectOwner;
 window.exitOwnerMode = exitOwnerMode;
 window.closeModal = closeModal;
 
 (async function init(){
-  await loadAll();
+  await loadPublicData();
   render();
 })();
 </script>
