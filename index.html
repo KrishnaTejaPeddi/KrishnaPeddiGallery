@@ -425,6 +425,99 @@ h1.title{
   .plate.rev .figure{order:1;}
   .plate.rev .caption{order:2;}
 }
+
+.figure img{cursor:zoom-in;}
+
+.lightbox-overlay{
+  position:fixed;inset:0;
+  background:rgba(8,7,5,.95);
+  z-index:300;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:80px 100px;
+}
+.lightbox-close{
+  position:fixed;
+  top:22px;
+  right:26px;
+  font-family:"IBM Plex Mono", monospace;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  background:transparent;
+  border:1px solid var(--line);
+  color:var(--porcelain-dim);
+  padding:9px 15px;
+  border-radius:2px;
+  cursor:pointer;
+  z-index:310;
+}
+.lightbox-close:hover{color:var(--brass);border-color:var(--brass);}
+.lightbox-arrow{
+  position:fixed;
+  top:50%;
+  transform:translateY(-50%);
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:var(--bg-raised);
+  border:1px solid var(--line);
+  color:var(--porcelain);
+  font-size:20px;
+  line-height:1;
+  cursor:pointer;
+  z-index:310;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.lightbox-arrow:hover{border-color:var(--brass);color:var(--brass);}
+.lightbox-arrow:disabled{opacity:.25;cursor:default;}
+.lightbox-arrow:disabled:hover{border-color:var(--line);color:var(--porcelain);}
+.lightbox-arrow.left{left:24px;}
+.lightbox-arrow.right{right:24px;}
+.lightbox-body{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  max-width:100%;
+  max-height:100%;
+}
+.lightbox-img{
+  max-width:100%;
+  max-height:70vh;
+  object-fit:contain;
+  border:1px solid var(--line);
+  background:var(--bg-raised);
+}
+.lightbox-caption{
+  text-align:center;
+  margin-top:22px;
+  max-width:600px;
+}
+.lightbox-caption .plate-num{margin-bottom:8px;}
+.lightbox-caption h2{
+  font-family:"Fraunces", serif;
+  font-style:italic;
+  font-weight:500;
+  font-size:22px;
+  margin:0 0 8px;
+  color:var(--porcelain);
+}
+.lightbox-caption p{
+  font-size:14px;
+  line-height:1.6;
+  color:var(--porcelain-dim);
+  margin:0;
+  white-space:pre-wrap;
+}
+@media (max-width:720px){
+  .lightbox-overlay{padding:70px 20px;}
+  .lightbox-arrow{width:44px;height:44px;font-size:17px;}
+  .lightbox-arrow.left{left:8px;}
+  .lightbox-arrow.right{right:8px;}
+}
 </style>
 </head>
 <body>
@@ -435,6 +528,7 @@ h1.title{
 
 <div class="owner-bar" id="ownerBar"></div>
 <div id="modalRoot"></div>
+<div id="lightboxRoot"></div>
 
 <script>
 /* Edit these two lines to match your GitHub repo before uploading */
@@ -453,6 +547,57 @@ let pages = [
 let postsByPage = { home: [], photography: [] };
 let isOwner = false;
 let pendingFile = null;
+let lightboxState = null;
+
+function openLightbox(pageId, index){
+  lightboxState = { pageId, index };
+  renderLightbox();
+  document.addEventListener("keydown", lightboxKeyHandler);
+}
+function closeLightbox(){
+  lightboxState = null;
+  document.getElementById("lightboxRoot").innerHTML = "";
+  document.removeEventListener("keydown", lightboxKeyHandler);
+}
+function lightboxNav(dir){
+  if(!lightboxState) return;
+  const posts = postsByPage[lightboxState.pageId] || [];
+  const newIndex = lightboxState.index + dir;
+  if(newIndex < 0 || newIndex >= posts.length) return;
+  lightboxState.index = newIndex;
+  renderLightbox();
+}
+function lightboxKeyHandler(e){
+  if(e.key === "Escape") closeLightbox();
+  else if(e.key === "ArrowLeft") lightboxNav(-1);
+  else if(e.key === "ArrowRight") lightboxNav(1);
+}
+function renderLightbox(){
+  const root = document.getElementById("lightboxRoot");
+  if(!lightboxState){ root.innerHTML = ""; return; }
+  const posts = postsByPage[lightboxState.pageId] || [];
+  const post = posts[lightboxState.index];
+  if(!post){ closeLightbox(); return; }
+  const atStart = lightboxState.index === 0;
+  const atEnd = lightboxState.index === posts.length - 1;
+
+  root.innerHTML = ""
+    + '<div class="lightbox-overlay" id="lbOverlay">'
+    + '<button class="lightbox-close" onclick="closeLightbox()">Close ✕</button>'
+    + '<button class="lightbox-arrow left" onclick="lightboxNav(-1)"' + (atStart ? " disabled" : "") + '>&#8592;</button>'
+    + '<button class="lightbox-arrow right" onclick="lightboxNav(1)"' + (atEnd ? " disabled" : "") + '>&#8594;</button>'
+    + '<div class="lightbox-body">'
+    + '<img class="lightbox-img" src="' + esc(post.imageUrl) + '" alt="' + esc(post.title) + '">'
+    + '<div class="lightbox-caption">'
+    + '<div class="plate-num" style="color:var(--brass-dim)">Plate ' + pad3(lightboxState.index + 1) + " of " + pad3(posts.length) + "</div>"
+    + "<h2>" + (esc(post.title) || "Untitled") + "</h2>"
+    + "<p>" + esc(post.caption) + "</p>"
+    + "</div></div></div>";
+
+  document.getElementById("lbOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "lbOverlay") closeLightbox();
+  });
+}
 
 function esc(s){
   const d = document.createElement("div");
@@ -643,6 +788,7 @@ function render(){
         + '<div class="plate' + (reversed ? " rev" : "") + '">'
         + '<div class="figure">'
         + '<img src="' + esc(post.imageUrl) + '" alt="' + esc(post.title) + '" '
+        + 'onclick="openLightbox(\'' + pageId + '\', ' + i + ')" '
         + 'onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'broken\',textContent:\'Image could not be loaded\'}))">'
         + "</div>"
         + '<div class="caption">'
@@ -981,6 +1127,9 @@ window.renamePage = renamePage;
 window.confirmRenamePage = confirmRenamePage;
 window.deletePage = deletePage;
 window.confirmDeletePage = confirmDeletePage;
+window.openLightbox = openLightbox;
+window.closeLightbox = closeLightbox;
+window.lightboxNav = lightboxNav;
 
 (async function init(){
   await loadPublicData();
