@@ -159,108 +159,130 @@ h1.title{
 .add-btn:disabled{opacity:.5;cursor:default;}
 
 .plates{
-  display:flex;
-  flex-direction:column;
-  gap:64px;
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:28px;
 }
 
 .plate{
-  display:grid;
-  grid-template-columns:1.15fr 1fr;
-  gap:36px;
-  align-items:start;
+  display:flex;
+  flex-direction:column;
 }
-.plate.rev{grid-template-columns:1fr 1.15fr;}
-.plate.rev .figure{order:2;}
-.plate.rev .caption{order:1;}
 
 .figure{
   border:1px solid var(--line);
-  padding:10px;
+  padding:8px;
   background:var(--bg-raised);
 }
 .figure img{
   display:block;
   width:100%;
   height:auto;
-  max-height:520px;
+  aspect-ratio:4/5;
   object-fit:cover;
 }
 .figure .broken{
   width:100%;
-  aspect-ratio:4/3;
+  aspect-ratio:4/5;
   display:flex;
   align-items:center;
   justify-content:center;
   color:var(--porcelain-dim);
   font-family:"IBM Plex Mono",monospace;
-  font-size:12px;
+  font-size:11px;
   text-align:center;
-  padding:20px;
+  padding:16px;
 }
 
-.caption{
+.caption-tab{
   background:var(--paper);
   color:var(--ink);
-  padding:28px 26px;
-  align-self:stretch;
-  display:flex;
-  flex-direction:column;
-  min-height:180px;
+  border:1px solid var(--line);
+  border-top:none;
 }
+.caption-tab summary{
+  cursor:pointer;
+  list-style:none;
+  padding:12px 14px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+}
+.caption-tab summary::-webkit-details-marker{display:none;}
+.caption-tab summary::after{
+  content:"+";
+  font-family:"IBM Plex Mono", monospace;
+  color:var(--brass-dim);
+  flex-shrink:0;
+  font-size:16px;
+  line-height:1.2;
+}
+.caption-tab[open] summary::after{content:"–";}
+.summary-text{min-width:0;}
 
 .plate-num{
   font-family:"IBM Plex Mono", monospace;
-  font-size:11px;
-  letter-spacing:.12em;
+  font-size:10px;
+  letter-spacing:.1em;
   color:var(--brass-dim);
-  margin-bottom:10px;
+  margin-bottom:4px;
 }
 
-.caption h2{
+.caption-tab h2{
   font-family:"Fraunces", serif;
   font-style:italic;
   font-weight:500;
-  font-size:24px;
-  margin:0 0 12px;
-  line-height:1.15;
+  font-size:15px;
+  margin:0;
+  line-height:1.25;
 }
 
-.caption p{
-  font-size:14.5px;
-  line-height:1.65;
-  margin:0 0 auto;
+.caption-body{
+  padding:0 14px 16px;
+}
+.caption-body p{
+  font-size:13px;
+  line-height:1.6;
+  margin:0 0 10px;
   color:#3A362E;
   white-space:pre-wrap;
 }
 
 .plate-date{
   font-family:"IBM Plex Mono", monospace;
-  font-size:11px;
+  font-size:10px;
   color:#6B6658;
-  margin-top:18px;
-  padding-top:14px;
+  margin-top:10px;
+  padding-top:10px;
   border-top:1px solid #D9D3C4;
 }
 
 .plate-actions{
   display:flex;
-  gap:10px;
-  margin-top:14px;
+  gap:8px;
+  margin-top:12px;
 }
 .icon-btn{
   font-family:"IBM Plex Mono", monospace;
-  font-size:11px;
+  font-size:10.5px;
   background:transparent;
   border:1px solid #C9C2AE;
   color:#3A362E;
-  padding:6px 12px;
+  padding:5px 10px;
   border-radius:2px;
   cursor:pointer;
 }
 .icon-btn:hover{border-color:var(--ink);}
 .icon-btn.danger{color:var(--rust);border-color:#D8B3A6;}
 .icon-btn.danger:hover{border-color:var(--rust);}
+
+@media (max-width:900px){
+  .plates{grid-template-columns:repeat(2, 1fr);}
+}
+@media (max-width:560px){
+  .plates{grid-template-columns:1fr;}
+}
 
 .empty{
   border:1px dashed var(--line);
@@ -418,12 +440,6 @@ h1.title{
   font-size:12px;
   letter-spacing:.08em;
   text-transform:uppercase;
-}
-
-@media (max-width:720px){
-  .plate, .plate.rev{grid-template-columns:1fr;}
-  .plate.rev .figure{order:1;}
-  .plate.rev .caption{order:2;}
 }
 
 .figure img{cursor:zoom-in;}
@@ -783,17 +799,16 @@ function render(){
       + "</div>";
   }else{
     platesHtml = posts.map((post, i) => {
-      const reversed = i % 2 === 1;
       return ""
-        + '<div class="plate' + (reversed ? " rev" : "") + '">'
+        + '<div class="plate">'
         + '<div class="figure">'
         + '<img src="' + esc(post.imageUrl) + '" alt="' + esc(post.title) + '" '
         + 'onclick="openLightbox(\'' + pageId + '\', ' + i + ')" '
         + 'onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'broken\',textContent:\'Image could not be loaded\'}))">'
         + "</div>"
-        + '<div class="caption">'
-        + '<div class="plate-num">Plate ' + pad3(i + 1) + "</div>"
-        + "<h2>" + (esc(post.title) || "Untitled") + "</h2>"
+        + '<details class="caption-tab">'
+        + '<summary><div class="summary-text"><div class="plate-num">Plate ' + pad3(i + 1) + '</div><h2>' + (esc(post.title) || "Untitled") + "</h2></div></summary>"
+        + '<div class="caption-body">'
         + "<p>" + esc(post.caption) + "</p>"
         + (post.date ? '<div class="plate-date">' + fmtDate(post.date) + "</div>" : "")
         + (isOwner
@@ -802,7 +817,7 @@ function render(){
               + '<button class="icon-btn danger" onclick="deletePost(\'' + post.id + '\')">Delete</button>'
               + "</div>"
             : "")
-        + "</div></div>";
+        + "</div></details></div>";
     }).join("");
   }
 
