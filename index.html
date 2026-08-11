@@ -603,7 +603,7 @@ function renderLightbox(){
     + '<button class="lightbox-arrow left" onclick="lightboxNav(-1)"' + (atStart ? " disabled" : "") + '>&#8592;</button>'
     + '<button class="lightbox-arrow right" onclick="lightboxNav(1)"' + (atEnd ? " disabled" : "") + '>&#8594;</button>'
     + '<div class="lightbox-body">'
-    + '<img class="lightbox-img" src="' + esc(post.imageUrl) + '" alt="' + esc(post.title) + '">'
+    + '<img class="lightbox-img" src="' + esc(post.imageUrl) + '" alt="' + esc(post.title) + '" onerror="retryImage(this)">'
     + '<div class="lightbox-caption">'
     + '<div class="plate-num" style="color:var(--brass-dim)">Plate ' + pad3(lightboxState.index + 1) + " of " + pad3(posts.length) + "</div>"
     + "<h2>" + (esc(post.title) || "Untitled") + "</h2>"
@@ -665,6 +665,17 @@ function safeFileName(name){
 }
 function rawUrlFor(path){
   return "https://raw.githubusercontent.com/" + GH_OWNER + "/" + GH_REPO + "/" + GH_BRANCH + "/" + path.split("/").map(encodeURIComponent).join("/");
+}
+function retryImage(img){
+  const attempt = parseInt(img.dataset.retry || "0", 10) + 1;
+  if(attempt > 4){
+    img.replaceWith(Object.assign(document.createElement("div"), { className: "broken", textContent: "Image could not be loaded" }));
+    return;
+  }
+  const baseSrc = img.dataset.baseSrc || img.src.split("?")[0];
+  img.dataset.baseSrc = baseSrc;
+  img.dataset.retry = attempt;
+  setTimeout(() => { img.src = baseSrc + "?r=" + Date.now(); }, attempt * 1500);
 }
 
 async function loadPublicData(){
@@ -804,7 +815,7 @@ function render(){
         + '<div class="figure">'
         + '<img src="' + esc(post.imageUrl) + '" alt="' + esc(post.title) + '" '
         + 'onclick="openLightbox(\'' + pageId + '\', ' + i + ')" '
-        + 'onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'broken\',textContent:\'Image could not be loaded\'}))">'
+        + 'onerror="retryImage(this)">'
         + "</div>"
         + '<details class="caption-tab">'
         + '<summary><div class="summary-text"><div class="plate-num">Plate ' + pad3(i + 1) + '</div><h2>' + (esc(post.title) || "Untitled") + "</h2></div></summary>"
@@ -1145,6 +1156,7 @@ window.confirmDeletePage = confirmDeletePage;
 window.openLightbox = openLightbox;
 window.closeLightbox = closeLightbox;
 window.lightboxNav = lightboxNav;
+window.retryImage = retryImage;
 
 (async function init(){
   await loadPublicData();
