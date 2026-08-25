@@ -748,7 +748,8 @@ h1.title{
 /* ── side banners (scroll with the page, not fixed to viewport) ── */
 .side-rail{
   position:absolute;
-  top:150px;
+  top:38px;
+  height:calc(100vh - 38px);
   width:70px;
   z-index:5;
 }
@@ -762,20 +763,28 @@ h1.title{
   border-right:2px solid var(--raise-lo);
   border-bottom:2px solid var(--raise-lo);
   box-shadow:4px 4px 0 rgba(0,0,0,.35);
-  min-height:520px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:16px 6px;
+  height:100%;
+  position:relative;
+  overflow:hidden;
 }
 .vb-mid{
+  position:absolute;
+  left:50%;
+  top:100%;
+  transform:translateX(-50%);
   writing-mode:vertical-rl;
   text-orientation:mixed;
   font-family:Arial, Helvetica, sans-serif;
   font-weight:bold;
   font-size:14px;
   letter-spacing:.12em;
+  white-space:nowrap;
   text-shadow:1px 1px 1px rgba(255,255,255,.5);
+  animation:vb-scroll 9s linear infinite;
+}
+@keyframes vb-scroll{
+  0%{top:100%;}
+  100%{top:-100%;}
 }
 
 @media (max-width:1300px){
