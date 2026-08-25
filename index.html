@@ -745,6 +745,59 @@ h1.title{
   width:100%;
 }
 
+/* ── side rails ── */
+.side-rail{
+  position:fixed;
+  top:150px;
+  width:118px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  z-index:40;
+}
+.side-rail.left{left:16px;}
+.side-rail.right{right:16px;}
+.side-badge{
+  background:var(--panel);
+  border-top:2px solid var(--raise-hi);
+  border-left:2px solid var(--raise-hi);
+  border-right:2px solid var(--raise-lo);
+  border-bottom:2px solid var(--raise-lo);
+  padding:10px 8px;
+  text-align:center;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight:bold;
+  font-size:11px;
+  line-height:1.4;
+  color:#000;
+  text-shadow:1px 1px 1px rgba(255,255,255,.5);
+  box-shadow:3px 3px 0 rgba(0,0,0,.35);
+}
+.side-badge.dark{
+  background:#000;
+  color:#fff;
+  border-top-color:#666;
+  border-left-color:#666;
+  border-right-color:#000;
+  border-bottom-color:#000;
+  text-shadow:1px 1px 1px rgba(0,0,0,.6);
+  box-shadow:3px 3px 0 rgba(255,255,255,.12);
+}
+.side-badge.blink{animation:new-blink 1.1s steps(2, jump-none) infinite;}
+.side-badge .micro{font-size:9px;font-weight:normal;letter-spacing:.06em;margin-bottom:4px;text-transform:uppercase;}
+.side-badge .counter-num{font-size:16px;letter-spacing:3px;}
+.side-badge.webring div{padding:3px 0;border-top:1px dotted #888;}
+.side-badge.webring div:first-of-type{border-top:none;}
+.side-badge.vertical{
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  padding:16px 6px;
+  letter-spacing:.05em;
+}
+@media (max-width:1300px){
+  .side-rail{display:none;}
+}
+
 @media (max-width:900px){
   .plates{grid-template-columns:repeat(2, 1fr);}
 }
@@ -761,6 +814,36 @@ h1.title{
 
 <div class="marquee-bar">
   <div class="marquee-track">☆ ★ WELCOME TO MY GALLERY ★ ☆ &nbsp;&nbsp; BEST VIEWED AT 800x600 RESOLUTION &nbsp;&nbsp; ☆ ★ SIGN MY GUESTBOOK ★ ☆ &nbsp;&nbsp; THANKS FOR STOPPING BY!! &nbsp;&nbsp; ☆ ★ WELCOME TO MY GALLERY ★ ☆</div>
+</div>
+
+<div class="side-rail left">
+  <div class="side-badge dark blink">★ NEW UPDATES ★</div>
+  <div class="side-badge">
+    <div class="micro">Hit Counter</div>
+    <div class="counter-num">003421</div>
+  </div>
+  <div class="side-badge">NO FRAMES<br>NO PLUGINS<br>PURE HTML</div>
+  <div class="side-badge dark">
+    <div class="micro">Resolution</div>
+    <div>800 x 600</div>
+  </div>
+  <div class="side-badge webring">
+    <div class="micro">Webring</div>
+    <div>&larr; PREV</div>
+    <div>RANDOM</div>
+    <div>NEXT &rarr;</div>
+  </div>
+</div>
+
+<div class="side-rail right">
+  <div class="side-badge dark blink">★ TOP SITE ★</div>
+  <div class="side-badge vertical">SIGN THE GUESTBOOK</div>
+  <div class="side-badge">MADE WITH<br>NOTEPAD</div>
+  <div class="side-badge dark">
+    <div class="micro">Last Update</div>
+    <div>TODAY</div>
+  </div>
+  <div class="side-badge"><span class="sparkle">✦</span> AWARD WINNER <span class="sparkle">✦</span></div>
 </div>
 
 <div class="wrap" id="app">
