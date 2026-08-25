@@ -745,19 +745,20 @@ h1.title{
   width:100%;
 }
 
-/* ── side rails ── */
+/* ── side rails (scroll with the page, not fixed to viewport) ── */
 .side-rail{
-  position:fixed;
+  position:absolute;
   top:150px;
   width:118px;
   display:flex;
   flex-direction:column;
   gap:14px;
-  z-index:40;
+  z-index:5;
 }
 .side-rail.left{left:16px;}
 .side-rail.right{right:16px;}
-.side-badge{
+
+.gif-badge{
   background:var(--panel);
   border-top:2px solid var(--raise-hi);
   border-left:2px solid var(--raise-hi);
@@ -773,7 +774,7 @@ h1.title{
   text-shadow:1px 1px 1px rgba(255,255,255,.5);
   box-shadow:3px 3px 0 rgba(0,0,0,.35);
 }
-.side-badge.dark{
+.gif-badge.dark{
   background:#000;
   color:#fff;
   border-top-color:#666;
@@ -783,20 +784,76 @@ h1.title{
   text-shadow:1px 1px 1px rgba(0,0,0,.6);
   box-shadow:3px 3px 0 rgba(255,255,255,.12);
 }
-.side-badge.blink{animation:new-blink 1.1s steps(2, jump-none) infinite;}
-.side-badge .micro{font-size:9px;font-weight:normal;letter-spacing:.06em;margin-bottom:4px;text-transform:uppercase;}
-.side-badge .counter-num{font-size:16px;letter-spacing:3px;}
-.side-badge.webring div{padding:3px 0;border-top:1px dotted #888;}
-.side-badge.webring div:first-of-type{border-top:none;}
-.side-badge.vertical{
+.gif-badge.blink{animation:new-blink 1.1s steps(2, jump-none) infinite;}
+.gif-badge.flicker{animation:gif-flicker 1.6s ease-in-out infinite;}
+.gif-badge .micro{font-size:9px;font-weight:normal;letter-spacing:.06em;margin-bottom:4px;text-transform:uppercase;}
+.gif-icon{display:inline-block;font-size:20px;filter:grayscale(1) contrast(1.2);}
+.gif-badge.spin .gif-icon{animation:spin-sparkle 2.2s linear infinite;}
+.gif-label{margin-top:4px;font-size:10px;}
+.loading-dots{display:flex;justify-content:center;gap:5px;margin-top:4px;}
+.loading-dots span{width:6px;height:6px;background:#000;display:inline-block;animation:gif-bounce 1s ease-in-out infinite;}
+.loading-dots span:nth-child(2){animation-delay:.15s;}
+.loading-dots span:nth-child(3){animation-delay:.3s;}
+@keyframes gif-flicker{
+  0%, 100%{opacity:1;}
+  45%{opacity:.35;}
+  55%{opacity:.85;}
+  70%{opacity:.5;}
+}
+@keyframes gif-bounce{
+  0%, 100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+
+.vert-banner{
+  background:var(--panel);
+  border-top:2px solid var(--raise-hi);
+  border-left:2px solid var(--raise-hi);
+  border-right:2px solid var(--raise-lo);
+  border-bottom:2px solid var(--raise-lo);
+  box-shadow:4px 4px 0 rgba(0,0,0,.35);
+  min-height:480px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:16px 6px;
+}
+.vb-star{
+  font-size:32px;
+  margin-bottom:12px;
+  filter:grayscale(1) contrast(1.2);
+  animation:spin-sparkle 3.5s linear infinite;
+}
+.vb-mid{
   writing-mode:vertical-rl;
   text-orientation:mixed;
-  padding:16px 6px;
-  letter-spacing:.05em;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight:bold;
+  font-size:13px;
+  letter-spacing:.1em;
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-shadow:1px 1px 1px rgba(255,255,255,.5);
+  animation:gif-flicker 3s ease-in-out infinite;
 }
+.vb-tag{
+  margin-top:12px;
+  background:#000;
+  color:#fff;
+  padding:5px 8px;
+  font-size:11px;
+  font-weight:bold;
+  border:1px solid #fff;
+  text-shadow:1px 1px 1px rgba(0,0,0,.6);
+  animation:new-blink 1s steps(2, jump-none) infinite;
+}
+
 @media (max-width:1300px){
   .side-rail{display:none;}
 }
+
 
 @media (max-width:900px){
   .plates{grid-template-columns:repeat(2, 1fr);}
