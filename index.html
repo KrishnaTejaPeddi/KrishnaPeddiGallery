@@ -37,6 +37,7 @@ html{cursor:default;}
 body{
   margin:0;
   min-height:100vh;
+  position:relative;
   font-family:Arial, Helvetica, sans-serif;
   color:var(--ink);
   text-shadow:1px 1px 1px rgba(0,0,0,.45);
@@ -749,7 +750,7 @@ h1.title{
 .side-rail{
   position:absolute;
   top:38px;
-  height:calc(100vh - 38px);
+  bottom:0;
   width:70px;
   z-index:5;
 }
@@ -780,7 +781,7 @@ h1.title{
   letter-spacing:.12em;
   white-space:nowrap;
   text-shadow:1px 1px 1px rgba(255,255,255,.5);
-  animation:vb-scroll 9s linear infinite;
+  animation:vb-scroll 30s linear infinite;
 }
 @keyframes vb-scroll{
   0%{top:100%;}
@@ -1033,10 +1034,11 @@ async function ghApi(path, token, options){
   return res.json();
 }
 
-async function commitImageAndData(file, message){
+async function commitImageAndData(file, message, post){
   const token = getToken();
   const base64 = await readFileAsBase64(file);
   const imagePath = "images/" + safeFileName(file.name);
+  post.imageUrl = rawUrlFor(imagePath);
 
   const refJson = await ghApi("/repos/" + GH_OWNER + "/" + GH_REPO + "/git/refs/heads/" + GH_BRANCH, token);
   const latestCommitSha = refJson.object.sha;
@@ -1069,8 +1071,6 @@ async function commitImageAndData(file, message){
     method: "PATCH",
     body: JSON.stringify({ sha: newCommitJson.sha })
   });
-
-  return rawUrlFor(imagePath);
 }
 
 function render(){
@@ -1378,20 +1378,18 @@ async function savePost(id){
   const prevPosts = JSON.parse(JSON.stringify(posts));
   let newPostId = id;
   try{
-    let imageUrl = existingPost ? existingPost.imageUrl : null;
-
+    let post;
     if(id){
-      const post = posts.find(p => p.id === id);
+      post = posts.find(p => p.id === id);
       post.title = title; post.caption = caption; post.date = date;
     }else{
       newPostId = "p" + Date.now() + Math.random().toString(36).slice(2, 7);
-      posts.push({ id: newPostId, imageUrl: "", title, caption, date });
+      post = { id: newPostId, imageUrl: "", title, caption, date };
+      posts.push(post);
     }
 
     if(pendingFile){
-      imageUrl = await commitImageAndData(pendingFile, id ? "Replace image on gallery plate" : "Add gallery plate with image");
-      const post = posts.find(p => p.id === newPostId);
-      post.imageUrl = imageUrl;
+      await commitImageAndData(pendingFile, id ? "Replace image on gallery plate" : "Add gallery plate with image", post);
     }else{
       await commitData(id ? "Edit gallery plate" : "Add gallery plate");
     }
